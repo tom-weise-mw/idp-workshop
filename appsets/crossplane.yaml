@@ -61,3 +61,42 @@ spec:
         automated:
           prune: true
           selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: crossplane-xrds
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - git:
+      repoURL: https://github.com/tom-weise-mw/idp-workshop.git
+      revision: HEAD
+      directories:
+        - path: crossplane/xrds/*
+      requeueAfterSeconds: 30
+  template:
+    metadata:
+      name: '{{.path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/tom-weise-mw/idp-workshop.git
+        targetRevision: HEAD
+        path: '{{.path.path}}'
+        directory:
+          recurse: true
+      destination:
+        namespace: default
+        server: https://kubernetes.default.svc
+      syncPolicy:
+        syncOptions:
+        - CreateNamespace=true
+        automated:
+          prune: true
+          selfHeal: true
