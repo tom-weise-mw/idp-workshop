@@ -1,0 +1,5 @@
+apiVersion: idp.lieberlois/v1alpha1
+kind: VirtualCluster
+metadata:
+  name: your-team-name
+spec: {}
